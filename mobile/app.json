@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "PULSE",
+    "slug": "pulse-perfume",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "pulse",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F5F4EF",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pulse.perfume"
+    },
+    "android": {
+      "package": "com.pulse.perfume",
+      "adaptiveIcon": {
+        "backgroundColor": "#7E836E",
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F5F4EF",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 120
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/android-icon-foreground.png",
+          "color": "#7E836E"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

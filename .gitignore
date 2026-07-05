@@ -1,0 +1,28 @@
+# dependencies
+**/node_modules/
+# next.js
+web/.next/
+web/out/
+# expo / RN
+mobile/.expo/
+mobile/dist/
+mobile/web-build/
+# convex
+web/.convex/
+# builds & caches
+**/dist/
+**/.turbo/
+*.tsbuildinfo
+# env & secrets
+**/.env
+**/.env*.local
+# logs
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+# OS
+.DS_Store
+Thumbs.db
+# editor
+.vscode/*
+!.vscode/extensions.json
