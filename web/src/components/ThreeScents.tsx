@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Plus } from "lucide-react";
-import { PRODUCTS, SIZES, type Product } from "@/lib/products";
+import { SIZES, type Product } from "@/lib/products";
+import { useProducts } from "@/lib/useProducts";
 import { useCart } from "@/lib/store";
 import { useLang } from "@/lib/lang";
 import Reveal from "./Reveal";
@@ -76,6 +77,7 @@ function ScentCard({ p, index }: { p: Product; index: number }) {
 
 export default function ThreeScents() {
   const { t } = useLang();
+  const products = useProducts();
   return (
     <section id="range" className="bg-paper-2 py-24 md:py-32">
       <div className="shell">
@@ -86,7 +88,7 @@ export default function ThreeScents() {
         </Reveal>
 
         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          {PRODUCTS.map((p, i) => (
+          {products.map((p, i) => (
             <ScentCard key={p.id} p={p} index={i} />
           ))}
         </div>

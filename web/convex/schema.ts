@@ -3,6 +3,33 @@ import { v } from "convex/values";
 
 // PULSE — Convex data model
 export default defineSchema({
+  products: defineTable({
+    slug: v.string(),
+    name: v.string(),
+    meaning: v.string(),
+    price: v.number(),
+    colorway: v.string(),
+    accentHex: v.string(),
+    card: v.string(), // static path fallback
+    cardStorageId: v.optional(v.id("_storage")), // uploaded image (overrides card)
+    notesTop: v.string(),
+    notesHeart: v.string(),
+    notesBase: v.string(),
+    blurb: v.string(),
+    order: v.number(),
+    active: v.boolean(),
+  }).index("by_slug", ["slug"]),
+
+  // single-document site settings (hero, etc.)
+  settings: defineTable({
+    key: v.string(), // always "site"
+    heroEyebrow: v.optional(v.string()),
+    heroTagline: v.optional(v.string()),
+    heroSub: v.optional(v.string()),
+    heroVideoStorageId: v.optional(v.id("_storage")),
+    heroPosterStorageId: v.optional(v.id("_storage")),
+  }).index("by_key", ["key"]),
+
   orders: defineTable({
     customer: v.object({
       name: v.string(),
@@ -22,6 +49,6 @@ export default defineSchema({
     ),
     total: v.number(),
     currency: v.string(),
-    status: v.string(), // "new" | "preparing" | "shipped" | "delivered"
+    status: v.string(),
   }).index("by_status", ["status"]),
 });

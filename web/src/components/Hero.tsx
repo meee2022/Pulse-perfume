@@ -3,14 +3,23 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useLang } from "@/lib/lang";
+import { useSettings } from "@/lib/useSettings";
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
   const { t } = useLang();
+  const s = useSettings();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const mediaScale = useTransform(scrollYProgress, [0, 1], [1.06, 1.22]);
   const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "-24%"]);
   const fade = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
+
+  // admin overrides fall back to the built-in defaults
+  const eyebrow = s?.heroEyebrow || t.hero.est;
+  const tagline = s?.heroTagline || t.hero.tagline;
+  const sub = s?.heroSub || t.hero.sub;
+  const videoSrc = s?.heroVideo || "/videos/pulse-hero.mp4";
+  const poster = s?.heroPoster || "/images/hero-poster.jpg";
 
   return (
     <section ref={ref} id="top" className="relative flex h-[100svh] min-h-[600px] flex-col justify-end overflow-hidden">
@@ -18,6 +27,7 @@ export default function Hero() {
       <motion.div style={{ scale: mediaScale }} className="absolute inset-0">
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video
+          key={videoSrc}
           className="h-full w-full object-cover"
           style={{ filter: "contrast(1.07) saturate(0.95) brightness(0.97)" }}
           autoPlay
@@ -25,22 +35,22 @@ export default function Hero() {
           loop
           playsInline
           preload="metadata"
-          poster="/images/hero-poster.jpg"
+          poster={poster}
         >
-          <source src="/videos/pulse-hero.mp4" type="video/mp4" />
+          <source src={videoSrc} type="video/mp4" />
         </video>
       </motion.div>
       <div className="absolute inset-0 bg-gradient-to-b from-ink/30 via-ink/10 to-ink/90" />
 
       <motion.div style={{ y: contentY, opacity: fade }} className="relative z-10 pb-[clamp(4rem,10vh,7rem)]">
         <div className="shell text-center text-paper-1">
-          <p className="mb-5 font-body text-[13px] uppercase tracking-wide1 text-paper-1/85">{t.hero.est}</p>
+          <p className="mb-5 font-body text-[13px] uppercase tracking-wide1 text-paper-1/85">{eyebrow}</p>
 
           <h1 className="display mx-auto max-w-4xl text-[clamp(2.5rem,9vw,5rem)] font-medium leading-[1.04] tracking-wide3">
-            {t.hero.tagline}
+            {tagline}
           </h1>
 
-          <p className="mx-auto mt-6 max-w-prose2 text-[15px] tracking-wide2 text-paper-1/85">{t.hero.sub}</p>
+          <p className="mx-auto mt-6 max-w-prose2 text-[15px] tracking-wide2 text-paper-1/85">{sub}</p>
 
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a href="#range" className="btn-solid">

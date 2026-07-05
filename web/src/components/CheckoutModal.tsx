@@ -4,7 +4,8 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Check, Loader2 } from "lucide-react";
 import { useMutation } from "convex/react";
-import { PRODUCTS, SIZES } from "@/lib/products";
+import { SIZES } from "@/lib/products";
+import { useProducts } from "@/lib/useProducts";
 import { useCart } from "@/lib/store";
 import { useLang } from "@/lib/lang";
 import { createOrderRef } from "@/lib/convex";
@@ -15,9 +16,15 @@ const STRIPE_ON = process.env.NEXT_PUBLIC_STRIPE_ENABLED === "true";
 
 export default function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { lines, clear } = useCart();
-  const subtotal = useCart((s) => s.subtotal());
+  const products = useProducts();
   const { t, money } = useLang();
   const createOrder = useMutation(createOrderRef);
+
+  const subtotal = lines.reduce((sum, l) => {
+    const p = products.find((x) => x.id === l.productId);
+    const s = SIZES.find((x) => x.id === l.sizeId);
+    return p && s ? sum + Math.round(p.price * s.multiplier) * l.qty : sum;
+  }, 0);
   const [status, setStatus] = useState<Status>("form");
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", city: "" });
 
@@ -26,24 +33,25 @@ export default function CheckoutModal({ open, onClose }: { open: boolean; onClos
 
   // for Stripe line items
   const items = lines.map((l) => {
-    const p = PRODUCTS.find((x) => x.id === l.productId)!;
+    const p = products.find((x) => x.id === l.productId)!;
     const s = SIZES.find((x) => x.id === l.sizeId)!;
     return { name: `${p.name} · ${s.id === "100ml" ? t.notes.size100 : t.notes.size3}`, price: Math.round(p.price * s.multiplier), qty: l.qty };
   });
 
   // structured items for the Convex order record
   const orderItems = lines.map((l) => {
-    const p = PRODUCTS.find((x) => x.id === l.productId)!;
+    const p = products.find((x) => x.id === l.productId)!;
     const s = SIZES.find((x) => x.id === l.sizeId)!;
     return { productId: p.id, name: p.name, size: s.id, qty: l.qty, price: Math.round(p.price * s.multiplier) };
   });
 
-  // save the order to Convex (no-op if functions aren't deployed yet)
+  // save the order to Convex (only when enabled + deployed; never blocks checkout)
   async function saveOrder() {
+    if (process.env.NEXT_PUBLIC_CONVEX_ENABLED !== "true") return;
     try {
       await createOrder({ customer: form, items: orderItems, total: subtotal, currency: "QAR" });
     } catch {
-      /* Convex not reachable / functions not deployed — order still confirmed locally */
+      /* Convex unreachable — order still confirmed locally */
     }
   }
 

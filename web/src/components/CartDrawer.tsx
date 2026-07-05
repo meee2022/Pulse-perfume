@@ -2,21 +2,28 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
-import { PRODUCTS, SIZES } from "@/lib/products";
+import { SIZES } from "@/lib/products";
+import { useProducts } from "@/lib/useProducts";
 import { useCart } from "@/lib/store";
 import { useLang } from "@/lib/lang";
 
 export default function CartDrawer({ onCheckout }: { onCheckout: () => void }) {
   const { lines, isOpen, close, setQty, remove } = useCart();
-  const subtotal = useCart((s) => s.subtotal());
+  const products = useProducts();
   const { t, money } = useLang();
 
   const detail = (productId: string, sizeId: string) => {
-    const p = PRODUCTS.find((x) => x.id === productId)!;
+    const p = products.find((x) => x.id === productId)!;
     const s = SIZES.find((x) => x.id === sizeId)!;
     const price = Math.round(p.price * s.multiplier);
     return { p, s, price };
   };
+
+  const subtotal = lines.reduce((sum, l) => {
+    const p = products.find((x) => x.id === l.productId);
+    const s = SIZES.find((x) => x.id === l.sizeId);
+    return p && s ? sum + Math.round(p.price * s.multiplier) * l.qty : sum;
+  }, 0);
 
   const off = "100%";
 
