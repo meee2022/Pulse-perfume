@@ -81,7 +81,7 @@ export const PRODUCTS: Product[] = [
     id: "noir",
     name: "INTENSE",
     meaning: "Dark · Amber",
-    price: 250,
+    price: 300,
     colorway: "black",
     accentHex: "#b7afa4",
     bottle: "/images/bottle-black.png",

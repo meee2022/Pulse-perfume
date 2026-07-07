@@ -36,15 +36,22 @@ function ScentRow({ p, index }: { p: Product; index: number }) {
   return (
     <Reveal delay={index * 90}>
       <article className="group overflow-hidden rounded-[24px] bg-paper-1 shadow-[0_16px_60px_-30px_rgba(38,37,33,0.5)]">
-        {/* cinematic campaign image — swaps to the separated 3ML tester vial when the tester size is selected */}
+        {/* cinematic campaign image — both the 100ml scene and the 3ML tester are preloaded and cross-fade instantly on size change */}
         <div className="relative aspect-[4/3] overflow-hidden">
           <Image
-            src={(isTester ? TESTER[p.colorway] : ENV[p.colorway]) ?? p.card}
-            alt={isTester ? `${p.name} — 3ML tester` : p.name}
+            src={ENV[p.colorway] ?? p.card}
+            alt={p.name}
             fill
             sizes="(max-width:768px) 100vw, 560px"
-            className="object-cover transition-transform duration-[2s] ease-out group-hover:scale-[1.04]"
+            className={`object-cover transition-[transform,opacity] duration-[600ms] ease-out group-hover:scale-[1.04] ${isTester ? "opacity-0" : "opacity-100"}`}
             priority={index === 0}
+          />
+          <Image
+            src={TESTER[p.colorway] ?? p.card}
+            alt={`${p.name} — 3ML tester`}
+            fill
+            sizes="(max-width:768px) 100vw, 560px"
+            className={`object-cover transition-[transform,opacity] duration-[600ms] ease-out group-hover:scale-[1.04] ${isTester ? "opacity-100" : "opacity-0"}`}
           />
           {isTester && (
             <span className="absolute right-2.5 top-2.5 z-10 rounded-full bg-paper-1/10 px-2 py-0.5 font-display text-[8px] uppercase tracking-wide2 text-paper-1/85 backdrop-blur-sm sm:right-4 sm:top-4 sm:px-3 sm:py-1 sm:text-[9.5px]">
@@ -104,7 +111,9 @@ function ScentRow({ p, index }: { p: Product; index: number }) {
 
 export default function ThreeScents() {
   const { t } = useLang();
-  const products = useProducts();
+  const raw = useProducts();
+  // lead with INTENSE (the black, premium/top-priced scent); keep the rest in order
+  const products = [...raw].sort((a, b) => (b.colorway === "black" ? 1 : 0) - (a.colorway === "black" ? 1 : 0));
 
   return (
     <section id="range" className="bg-paper-2 py-24 md:py-32">

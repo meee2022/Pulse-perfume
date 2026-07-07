@@ -20,7 +20,7 @@ export default function Hero() {
   const sub = s?.heroSub || t.hero.sub;
   const videoSrc = s?.heroVideo || "/videos/pulse-hero.mp4";
   const poster = s?.heroPoster || "/images/hero-poster.jpg";
-  const mobileVideo = "/videos/pulse-hero-vertical-2.mp4"; // cinematic 9:16 product film (approved bottle designs)
+  const mobileVideo = "/videos/pulse-hero-vertical-3.mp4"; // cinematic 9:16 product film (INTENSE first)
   const mobilePoster = "/images/hero-mobile-poster.jpg";
 
   return (
