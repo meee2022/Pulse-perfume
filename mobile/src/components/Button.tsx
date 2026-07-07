@@ -8,11 +8,13 @@ export default function Button({
   onPress,
   variant = "solid",
   style,
+  disabled = false,
 }: {
   label: string;
   onPress?: () => void;
   variant?: Variant;
   style?: ViewStyle;
+  disabled?: boolean;
 }) {
   const bg =
     variant === "solid" ? C.ink : variant === "olive" ? C.olive : variant === "light" ? C.white : "transparent";
@@ -22,7 +24,15 @@ export default function Button({
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [styles.btn, { backgroundColor: bg }, border, pressed && { opacity: 0.85 }, style]}
+      disabled={disabled}
+      style={({ pressed }) => [
+        styles.btn,
+        { backgroundColor: bg },
+        border,
+        pressed && { opacity: 0.85 },
+        disabled && { opacity: 0.45 },
+        style,
+      ]}
     >
       <Text style={[styles.label, { color: fg }]}>{label}</Text>
     </Pressable>

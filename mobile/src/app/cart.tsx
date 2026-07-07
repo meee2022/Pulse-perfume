@@ -3,9 +3,10 @@ import { ScrollView, View, Text, StyleSheet, Pressable, TextInput } from "react-
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { C, SPACING, RADIUS } from "../lib/theme";
-import { PRODUCTS, money } from "../lib/products";
-import { useCart } from "../lib/cart";
+import { PRODUCTS, CURRENCY, money } from "../lib/products";
+import { useCart, priceOf } from "../lib/cart";
 import { notifyOrderPlaced } from "../lib/notifications";
+import { submitOrder } from "../lib/convex";
 import Button from "../components/Button";
 
 type Step = "cart" | "form" | "done";
@@ -15,14 +16,40 @@ export default function Cart() {
   const { lines, setQty, remove, clear } = useCart();
   const subtotal = useCart((s) => s.subtotal());
   const [step, setStep] = useState<Step>("cart");
-  const [form, setForm] = useState({ name: "", phone: "", address: "", city: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", city: "" });
 
   const detail = (productId: string) => PRODUCTS.find((p) => p.id === productId)!;
 
   async function placeOrder() {
+    if (submitting) return;
+    setSubmitting(true);
+    const items = lines.map((l) => {
+      const p = detail(l.productId);
+      return { productId: p.id, name: p.name, size: l.size, qty: l.qty, price: priceOf(l.productId, l.size) };
+    });
+    // Record the order in the shared backend (so it appears in the web admin dashboard).
+    // Never block the customer on a network hiccup — confirm the order regardless.
+    try {
+      await submitOrder({
+        customer: {
+          name: form.name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim(),
+          address: form.address.trim(),
+          city: form.city.trim(),
+        },
+        items,
+        total: subtotal,
+        currency: CURRENCY,
+      });
+    } catch (e) {
+      console.warn("order submit failed (kept locally):", e);
+    }
     setStep("done");
     await notifyOrderPlaced(money(subtotal));
     clear();
+    setSubmitting(false);
   }
 
   if (step === "done") {
@@ -55,30 +82,31 @@ export default function Cart() {
         {step === "cart" ? (
           lines.map((l) => {
             const p = detail(l.productId);
+            const img = l.size === "3ml" ? p.tester : p.card;
             return (
-              <View key={l.productId} style={styles.line}>
-                <View style={[styles.thumb, { backgroundColor: p.accentHex }]}>
-                  <Image source={p.bottle} style={{ width: "100%", height: "130%" }} contentFit="contain" />
+              <View key={`${l.productId}-${l.size}`} style={styles.line}>
+                <View style={[styles.thumb, { backgroundColor: l.size === "3ml" ? "#14130f" : p.accentHex }]}>
+                  <Image source={img} style={{ width: "100%", height: "100%" }} contentFit="cover" />
                 </View>
                 <View style={{ flex: 1, marginLeft: 14 }}>
                   <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                     <Text style={styles.name}>{p.name}</Text>
-                    <Pressable onPress={() => remove(l.productId)} hitSlop={8}>
+                    <Pressable onPress={() => remove(l.productId, l.size)} hitSlop={8}>
                       <Text style={styles.remove}>✕</Text>
                     </Pressable>
                   </View>
-                  <Text style={styles.size}>100 ML</Text>
+                  <Text style={styles.size}>{l.size === "3ml" ? "3 ML · Tester" : "100 ML"}</Text>
                   <View style={styles.lineBottom}>
                     <View style={styles.stepper}>
-                      <Pressable onPress={() => setQty(l.productId, l.qty - 1)} hitSlop={8}>
+                      <Pressable onPress={() => setQty(l.productId, l.size, l.qty - 1)} hitSlop={8}>
                         <Text style={styles.stepBtn}>−</Text>
                       </Pressable>
                       <Text style={styles.qty}>{l.qty}</Text>
-                      <Pressable onPress={() => setQty(l.productId, l.qty + 1)} hitSlop={8}>
+                      <Pressable onPress={() => setQty(l.productId, l.size, l.qty + 1)} hitSlop={8}>
                         <Text style={styles.stepBtn}>+</Text>
                       </Pressable>
                     </View>
-                    <Text style={styles.linePrice}>{money(p.price * l.qty)}</Text>
+                    <Text style={styles.linePrice}>{money(priceOf(l.productId, l.size) * l.qty)}</Text>
                   </View>
                 </View>
               </View>
@@ -88,6 +116,7 @@ export default function Cart() {
           <View style={{ gap: 14 }}>
             <Text style={styles.formTitle}>Delivery Details</Text>
             <Field label="Full Name" value={form.name} onChangeText={(v) => setForm({ ...form, name: v })} />
+            <Field label="Email" value={form.email} onChangeText={(v) => setForm({ ...form, email: v })} keyboardType="email-address" autoCapitalize="none" />
             <Field label="Phone" value={form.phone} onChangeText={(v) => setForm({ ...form, phone: v })} keyboardType="phone-pad" />
             <Field label="Delivery Address" value={form.address} onChangeText={(v) => setForm({ ...form, address: v })} />
             <Field label="City" value={form.city} onChangeText={(v) => setForm({ ...form, city: v })} />
@@ -103,7 +132,12 @@ export default function Cart() {
         {step === "cart" ? (
           <Button label="Checkout" onPress={() => setStep("form")} />
         ) : (
-          <Button label={`Place Order · ${money(subtotal)}`} variant="olive" onPress={placeOrder} />
+          <Button
+            label={submitting ? "Placing Order…" : `Place Order · ${money(subtotal)}`}
+            variant="olive"
+            onPress={placeOrder}
+            disabled={submitting || !form.name.trim() || !form.phone.trim()}
+          />
         )}
       </View>
     </View>

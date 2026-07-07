@@ -12,7 +12,7 @@ export default function ScentCard({ p, width }: { p: Product; width?: number }) 
       style={({ pressed }) => [styles.card, width ? { width } : { flex: 1 }, pressed && { opacity: 0.92 }]}
     >
       <View style={[styles.imgWrap, { backgroundColor: p.accentHex }]}>
-        <Image source={p.bottle} style={styles.img} contentFit="cover" contentPosition="center" />
+        <Image source={p.card} style={styles.img} contentFit="cover" contentPosition="center" />
         <View style={styles.tag}>
           <Text style={styles.tagText}>100 ML</Text>
         </View>
