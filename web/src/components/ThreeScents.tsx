@@ -35,56 +35,56 @@ function ScentRow({ p, index }: { p: Product; index: number }) {
 
   return (
     <Reveal delay={index * 90}>
-      <article className="group overflow-hidden rounded-[26px] bg-paper-1 shadow-[0_16px_60px_-30px_rgba(38,37,33,0.5)]">
+      <article className="group overflow-hidden rounded-[24px] bg-paper-1 shadow-[0_16px_60px_-30px_rgba(38,37,33,0.5)]">
         {/* cinematic campaign image — swaps to the separated 3ML tester vial when the tester size is selected */}
-        <div className="relative aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
+        <div className="relative aspect-[4/3] overflow-hidden">
           <Image
             src={(isTester ? TESTER[p.colorway] : ENV[p.colorway]) ?? p.card}
             alt={isTester ? `${p.name} — 3ML tester` : p.name}
             fill
-            sizes="(max-width:1200px) 100vw, 1120px"
+            sizes="(max-width:768px) 100vw, 560px"
             className="object-cover transition-transform duration-[2s] ease-out group-hover:scale-[1.04]"
             priority={index === 0}
           />
           {isTester && (
-            <span className="absolute right-6 top-5 z-10 rounded-full bg-paper-1/10 px-3 py-1 font-display text-[10px] uppercase tracking-wide2 text-paper-1/85 backdrop-blur-sm">
+            <span className="absolute right-2.5 top-2.5 z-10 rounded-full bg-paper-1/10 px-2 py-0.5 font-display text-[8px] uppercase tracking-wide2 text-paper-1/85 backdrop-blur-sm sm:right-4 sm:top-4 sm:px-3 sm:py-1 sm:text-[9.5px]">
               3 ML · Tester
             </span>
           )}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-ink/5" />
-          <span className="absolute left-6 top-5 font-display text-[11px] tracking-wide1 text-paper-1/60">0{index + 1}</span>
-          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-6 md:p-10">
-            <div>
-              <span className="mb-2 block font-display text-[10.5px] uppercase tracking-wide1" style={{ color: ACCENT[p.colorway] }}>
+          <span className="absolute left-3 top-2.5 font-display text-[10px] tracking-wide1 text-paper-1/60 sm:left-5 sm:top-4 sm:text-[11px]">0{index + 1}</span>
+          <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-1 p-3 sm:flex-row sm:items-end sm:justify-between sm:gap-3 sm:p-5 md:p-7">
+            <div className="min-w-0">
+              <span className="mb-1 block font-body text-[8.5px] font-medium uppercase tracking-wide1 sm:mb-1.5 sm:text-[10px]" style={{ color: ACCENT[p.colorway] }}>
                 {COLORNAME[p.colorway]}
               </span>
-              <h3 className="font-display text-[30px] font-medium uppercase leading-none tracking-wide3 text-paper-1 md:text-[46px]">
+              <h3 className="font-display text-[16px] font-medium uppercase leading-none tracking-wide2 text-paper-1 sm:text-[24px] sm:tracking-wide3 md:text-[32px]">
                 {p.name}
               </h3>
-              <p className="mt-2 text-[13px] italic text-paper-1/70">{p.meaning}</p>
+              <p className="mt-1 hidden text-[10.5px] italic text-paper-1/70 sm:mt-1.5 sm:block sm:text-[12.5px]">{p.meaning}</p>
             </div>
-            <span className="shrink-0 font-display text-[16px] tracking-wide2 text-paper-1 md:text-[19px]">{money(price)}</span>
+            <span className="shrink-0 font-body text-[11px] font-medium tracking-wide2 text-paper-1/90 sm:font-display sm:text-[15px] md:text-[17px]">{money(price)}</span>
           </div>
         </div>
 
-        {/* details bar */}
-        <div className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between md:px-10 md:py-7">
-          <dl className="flex flex-wrap gap-x-8 gap-y-2 text-[12.5px] text-olive-deep">
+        {/* details */}
+        <div className="flex flex-col gap-3 p-3 sm:gap-5 sm:p-5 md:p-7">
+          <dl className="hidden flex-wrap gap-x-6 gap-y-2 text-[12px] text-olive-deep sm:flex">
             {(["top", "heart", "base"] as const).map((k) => (
               <div key={k} className="flex items-baseline gap-2">
-                <dt className="font-display text-[10px] uppercase tracking-wide2 text-ink/35">{t.notes[k]}</dt>
+                <dt className="font-display text-[9.5px] uppercase tracking-wide2 text-ink/35">{t.notes[k]}</dt>
                 <dd>{p.notes[k]}</dd>
               </div>
             ))}
           </dl>
 
-          <div className="flex items-center gap-3">
-            <div className="flex rounded-full bg-paper-2 p-1">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+            <div className="flex self-start rounded-full bg-paper-2 p-1">
               {SIZES.map((s) => (
                 <button
                   key={s.id}
                   onClick={() => setSize(s.id)}
-                  className={`rounded-full px-3.5 py-1.5 font-display text-[10.5px] uppercase tracking-wide2 transition-colors ${
+                  className={`rounded-full px-3 py-1.5 font-display text-[10.5px] uppercase tracking-wide2 transition-colors sm:px-3.5 ${
                     size === s.id ? "bg-ink text-paper-1" : "text-olive-deep"
                   }`}
                 >
@@ -92,7 +92,7 @@ function ScentRow({ p, index }: { p: Product; index: number }) {
                 </button>
               ))}
             </div>
-            <button onClick={() => add(p.id, size)} className="btn-solid !px-7 !py-3.5">
+            <button onClick={() => add(p.id, size)} className="btn-solid w-full justify-center !px-5 !py-2.5 sm:w-auto sm:!px-6 sm:!py-3">
               <Plus size={14} /> {t.notes.add}
             </button>
           </div>
@@ -121,10 +121,18 @@ export default function ThreeScents() {
           <p className="mt-5 max-w-prose2 text-[15px] leading-relaxed text-olive-deep">{t.range.sub}</p>
         </Reveal>
 
-        <div className="space-y-10 md:space-y-16">
-          {products.map((p, i) => (
-            <ScentRow key={p.id} p={p} index={i} />
-          ))}
+        {/* staggered two-column layout (kept on mobile too) — the right column drops down for a brick / editorial rhythm */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 md:gap-8">
+          <div className="space-y-3 sm:space-y-6 md:space-y-8">
+            {products.filter((_, i) => i % 2 === 0).map((p) => (
+              <ScentRow key={p.id} p={p} index={products.indexOf(p)} />
+            ))}
+          </div>
+          <div className="mt-8 space-y-3 sm:mt-12 sm:space-y-6 md:mt-16 md:space-y-8">
+            {products.filter((_, i) => i % 2 === 1).map((p) => (
+              <ScentRow key={p.id} p={p} index={products.indexOf(p)} />
+            ))}
+          </div>
         </div>
       </div>
     </section>

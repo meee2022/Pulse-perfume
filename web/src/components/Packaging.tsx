@@ -4,12 +4,12 @@ import Image from "next/image";
 import Reveal from "./Reveal";
 import { useLang } from "@/lib/lang";
 
-// single-bottle campaign shots (distinct from the tube+bottle sets used above)
+// single-bottle campaign shots — approved bottle designs (colorway caps, black logos, white on INTENSE)
 const GALLERY = [
-  { src: "/images/env-b-motion.jpg", name: "MOTION", accent: "#B8BCA6" },
-  { src: "/images/env-b-active.jpg", name: "ACTIVE", accent: "#A9BBD0" },
-  { src: "/images/env-b-performance.jpg", name: "PERFORMANCE", accent: "#D2D4D7" },
-  { src: "/images/env-b-intense.jpg", name: "INTENSE", accent: "#8FD3E0" },
+  { src: "/images/pack-green.jpg", name: "MOTION", accent: "#B8BCA6" },
+  { src: "/images/pack-blue.jpg", name: "ACTIVE", accent: "#A9BBD0" },
+  { src: "/images/pack-grey.jpg", name: "PERFORMANCE", accent: "#D2D4D7" },
+  { src: "/images/pack-black.jpg", name: "INTENSE", accent: "#8FD3E0" },
 ];
 
 export default function Packaging() {

@@ -1,21 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Hanken_Grotesk } from "next/font/google";
+import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import ServiceWorker from "@/components/ServiceWorker";
 import { LangProvider } from "@/lib/lang";
 import ConvexClientProvider from "@/components/ConvexProvider";
 
-// Display — geometric, distinctive (matches the PULSE brand)
-const spaceGrotesk = Space_Grotesk({
-  weight: ["300", "400", "500", "700"],
+// Display — editorial high-contrast serif (soft, luxe, "Playfair" look)
+const playfair = Playfair_Display({
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
 });
 
-// Body — humanist grotesque, quiet and legible
-const hanken = Hanken_Grotesk({
-  weight: ["300", "400", "500"],
+// Body — clean humanist sans, quiet and legible
+const inter = Inter({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
@@ -53,7 +54,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" dir="ltr" className={`${spaceGrotesk.variable} ${hanken.variable}`}>
+    <html lang="en" dir="ltr" suppressHydrationWarning className={`${playfair.variable} ${inter.variable}`}>
       <body className="font-body antialiased">
         <ConvexClientProvider>
           <LangProvider>
