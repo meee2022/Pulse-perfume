@@ -20,15 +20,26 @@ export default function Hero() {
   const sub = s?.heroSub || t.hero.sub;
   const videoSrc = s?.heroVideo || "/videos/pulse-hero.mp4";
   const poster = s?.heroPoster || "/images/hero-poster.jpg";
+  const mobileSrc = s?.heroPoster || "/images/hero-mobile.jpg"; // art-directed 9:16 for small screens
 
   return (
     <section ref={ref} id="top" className="relative flex h-[100svh] min-h-[600px] flex-col justify-end overflow-hidden">
       {/* cinematic product film background (poster = still, for load / reduced-data) */}
       <motion.div style={{ scale: mediaScale }} className="absolute inset-0">
+        {/* mobile — art-directed vertical shot (fills portrait cleanly) */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={mobileSrc}
+          alt=""
+          aria-hidden
+          className="kenburns h-full w-full object-cover object-center sm:hidden"
+          style={{ filter: "contrast(1.04) brightness(0.95)" }}
+        />
+        {/* desktop — cinematic product film */}
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video
           key={videoSrc}
-          className="h-full w-full object-cover"
+          className="hidden h-full w-full object-cover sm:block"
           style={{ filter: "contrast(1.07) saturate(0.95) brightness(0.97)" }}
           autoPlay
           muted

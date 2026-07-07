@@ -25,9 +25,9 @@ export default function Unboxing() {
               loop
               playsInline
               preload="metadata"
-              poster="/images/collection-poster.jpg"
+              poster="/images/collection-cinematic-poster.jpg"
             >
-              <source src="/videos/collection.mp4" type="video/mp4" />
+              <source src="/videos/collection-cinematic.mp4" type="video/mp4" />
             </video>
             {/* subtle vignette for depth */}
             <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_120px_rgba(38,37,33,0.18)]" />

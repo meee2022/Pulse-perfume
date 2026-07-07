@@ -26,3 +26,6 @@ Thumbs.db
 # editor
 .vscode/*
 !.vscode/extensions.json
+
+# local 4K asset archive (kept off the repo)
+exports/

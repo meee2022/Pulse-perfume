@@ -4,14 +4,44 @@ import Image from "next/image";
 import Reveal from "./Reveal";
 import { useLang } from "@/lib/lang";
 
+// single-bottle campaign shots (distinct from the tube+bottle sets used above)
+const GALLERY = [
+  { src: "/images/env-b-motion.jpg", name: "MOTION", accent: "#B8BCA6" },
+  { src: "/images/env-b-active.jpg", name: "ACTIVE", accent: "#A9BBD0" },
+  { src: "/images/env-b-performance.jpg", name: "PERFORMANCE", accent: "#D2D4D7" },
+  { src: "/images/env-b-intense.jpg", name: "INTENSE", accent: "#8FD3E0" },
+];
+
 export default function Packaging() {
   const { t } = useLang();
   return (
     <section className="bg-paper-2 py-24 md:py-32">
-      <div className="shell grid items-center gap-12 md:grid-cols-2">
+      <div className="shell grid items-center gap-12 md:grid-cols-2 md:gap-16">
         <Reveal className="order-2 md:order-1">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[0_10px_50px_rgba(38,37,33,0.12)]">
-            <Image src="/images/boxes.png" alt={t.packaging.title} fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover" />
+          <div className="grid grid-cols-2 gap-3 md:gap-4">
+            {GALLERY.map((g, i) => (
+              <div
+                key={g.name}
+                className={`group relative aspect-[4/5] overflow-hidden rounded-2xl shadow-[0_10px_40px_-24px_rgba(38,37,33,0.5)] ${
+                  i % 2 === 1 ? "translate-y-4 md:translate-y-8" : ""
+                }`}
+              >
+                <Image
+                  src={g.src}
+                  alt={g.name}
+                  fill
+                  sizes="(max-width:768px) 50vw, 280px"
+                  className="object-cover transition-transform duration-[1.8s] ease-out group-hover:scale-[1.06]"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
+                <span
+                  className="absolute bottom-4 left-4 font-display text-[12px] font-medium uppercase tracking-wide2 text-paper-1"
+                  style={{ textShadow: "0 1px 12px rgba(0,0,0,0.5)" }}
+                >
+                  {g.name}
+                </span>
+              </div>
+            ))}
           </div>
         </Reveal>
 
