@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { PRODUCTS, SIZES, type SizeId } from "./products";
+import { productById, SIZES, type SizeId } from "./products";
 
 export interface CartLine {
   productId: string;
@@ -11,7 +11,7 @@ export interface CartLine {
 
 const key = (productId: string, size: SizeId) => `${productId}::${size}`;
 const priceOf = (productId: string, size: SizeId) => {
-  const p = PRODUCTS.find((x) => x.id === productId);
+  const p = productById(productId);
   if (!p) return 0;
   const mult = SIZES.find((s) => s.id === size)?.multiplier ?? 1;
   return Math.round(p.price * mult);
@@ -54,7 +54,7 @@ export const useCart = create<CartState>()(
       count: () => get().lines.reduce((n, l) => n + l.qty, 0),
       subtotal: () => get().lines.reduce((sum, l) => sum + priceOf(l.productId, l.size) * l.qty, 0),
     }),
-    { name: "pulse-cart-v2", storage: createJSONStorage(() => AsyncStorage) }
+    { name: "pulse-cart-v3", storage: createJSONStorage(() => AsyncStorage) }
   )
 );
 

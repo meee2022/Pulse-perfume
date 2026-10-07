@@ -1,13 +1,14 @@
 import { ScrollView, View, Text, StyleSheet } from "react-native";
 import { C, SPACING } from "../lib/theme";
-import { PRODUCTS } from "../lib/products";
+import { useProducts } from "../lib/products";
 import ScentCard from "../components/ScentCard";
 
 export default function Shop() {
+  const products = useProducts();
   return (
     <ScrollView style={{ flex: 1, backgroundColor: C.bone }} contentContainerStyle={{ padding: SPACING.lg, gap: 16 }}>
-      <Text style={styles.intro}>One all-over spray, three matte colorways. 100 ML each.</Text>
-      {PRODUCTS.map((p) => (
+      <Text style={styles.intro}>One all-over spray, four matte colorways. 100 ML each.</Text>
+      {products.map((p) => (
         <ScentCard key={p.id} p={p} />
       ))}
       <View style={{ height: 20 }} />

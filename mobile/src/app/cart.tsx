@@ -3,7 +3,7 @@ import { ScrollView, View, Text, StyleSheet, Pressable, TextInput, Alert } from 
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { C, SPACING, RADIUS } from "../lib/theme";
-import { PRODUCTS, CURRENCY, money } from "../lib/products";
+import { useProducts, productById, CURRENCY, money } from "../lib/products";
 import { useCart, priceOf } from "../lib/cart";
 import { notifyOrderPlaced } from "../lib/notifications";
 import { submitOrder } from "../lib/convex";
@@ -20,7 +20,8 @@ export default function Cart() {
   const [orderNo, setOrderNo] = useState("");
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", city: "" });
 
-  const detail = (productId: string) => PRODUCTS.find((p) => p.id === productId)!;
+  useProducts(); // re-render when live prices arrive
+  const detail = (productId: string) => productById(productId)!;
 
   async function placeOrder() {
     if (submitting) return;

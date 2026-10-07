@@ -3,7 +3,7 @@ import { ScrollView, View, Text, StyleSheet, Dimensions, Pressable } from "react
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { C, SPACING, RADIUS } from "../../lib/theme";
-import { productById, money, SIZES, type SizeId } from "../../lib/products";
+import { useProducts, money, SIZES, type SizeId } from "../../lib/products";
 import { useCart } from "../../lib/cart";
 import Button from "../../components/Button";
 
@@ -23,7 +23,7 @@ export default function ProductDetail() {
   const router = useRouter();
   const add = useCart((s) => s.add);
   const [size, setSize] = useState<SizeId>("100ml");
-  const p = productById(String(id));
+  const p = useProducts().find((x) => x.id === String(id));
 
   const isTester = size === "3ml";
   const price = p ? Math.round(p.price * (SIZES.find((s) => s.id === size)?.multiplier ?? 1)) : 0;

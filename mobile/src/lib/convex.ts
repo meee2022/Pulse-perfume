@@ -13,6 +13,11 @@ export const CONVEX_ENABLED = !!CONVEX_URL;
 const client = new ConvexReactClient(CONVEX_URL);
 
 const createOrderRef = makeFunctionReference<"mutation">("orders:createOrder");
+const listProductsRef = makeFunctionReference<"query">("products:listProducts");
+
+// Current name / price / availability for each product, as managed in the admin dashboard.
+export const fetchLiveProducts = (): Promise<{ slug: string; name: string; price: number; active: boolean }[]> =>
+  client.query(listProductsRef, {});
 
 export type OrderCustomer = { name: string; email: string; phone: string; address: string; city: string };
 export type OrderItem = { productId: string; name: string; size: string; qty: number; price: number };

@@ -8,6 +8,8 @@ import CartButton from "../components/CartButton";
 import Logo from "../components/Logo";
 import AnimatedSplash from "../components/AnimatedSplash";
 import { ensureNotificationPermission } from "../lib/notifications";
+import { fetchLiveProducts } from "../lib/convex";
+import { applyLive } from "../lib/products";
 
 // keep the native splash up until our animated one takes over (no white flash)
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -17,6 +19,8 @@ export default function RootLayout() {
 
   useEffect(() => {
     ensureNotificationPermission();
+    // offline → keep the bundled catalogue; the server still prices the order itself
+    fetchLiveProducts().then(applyLive).catch(() => {});
     // hand off from the native splash to our animated overlay (both dark → seamless)
     SplashScreen.hideAsync().catch(() => {});
   }, []);

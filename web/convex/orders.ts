@@ -22,11 +22,30 @@ const item = v.object({
   price: v.number(),
 });
 
+// Mirrors SIZES in the web/mobile product data.
+const SIZE_MULTIPLIER: Record<string, number> = { "100ml": 1, "3ml": 0.18 };
+
 // Public: create an order from the checkout flow.
+// Names, prices and the total are taken from the products table, never from the
+// client — a stale app or a hand-crafted request cannot record a wrong price.
 export const createOrder = mutation({
   args: { customer, items: v.array(item), total: v.number(), currency: v.string() },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("orders", { ...args, status: "new" });
+    if (args.items.length === 0) throw new Error("empty order");
+    const items = [];
+    for (const it of args.items) {
+      const p = await ctx.db
+        .query("products")
+        .withIndex("by_slug", (q) => q.eq("slug", it.productId))
+        .unique();
+      const mult = SIZE_MULTIPLIER[it.size];
+      if (!p || !p.active) throw new Error(`product unavailable: ${it.productId}`);
+      if (!mult) throw new Error(`unknown size: ${it.size}`);
+      if (!Number.isInteger(it.qty) || it.qty < 1 || it.qty > 50) throw new Error("invalid quantity");
+      items.push({ productId: p.slug, name: p.name, size: it.size, qty: it.qty, price: Math.round(p.price * mult) });
+    }
+    const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+    return await ctx.db.insert("orders", { customer: args.customer, items, total, currency: "QAR", status: "new" });
   },
 });
 

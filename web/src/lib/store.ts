@@ -59,7 +59,7 @@ export const useCart = create<CartState>()(
           return sum + Math.round(p.price * s.multiplier) * l.qty;
         }, 0),
     }),
-    { name: "pulse-cart" }
+    { name: "pulse-cart-v2" }
   )
 );
 

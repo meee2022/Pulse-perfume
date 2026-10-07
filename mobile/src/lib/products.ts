@@ -2,6 +2,7 @@
 // Kept in sync with the web app: 4 scents (MOTION / ACTIVE / PERFORMANCE / INTENSE),
 // QAR pricing, cinematic campaign imagery. INTENSE leads (premium, top-priced).
 import type { ImageSourcePropType } from "react-native";
+import { create } from "zustand";
 
 export type Colorway = "green" | "blue" | "grey" | "black";
 export type SizeId = "100ml" | "3ml";
@@ -54,7 +55,7 @@ export const COLORNAME: Record<Colorway, string> = {
 
 export const PRODUCTS: Product[] = [
   {
-    id: "noir",
+    id: "intense",
     name: "INTENSE",
     meaning: "Dark · Amber",
     price: 300,
@@ -66,7 +67,7 @@ export const PRODUCTS: Product[] = [
     blurb: "Matte black, iridescent mark. Deep amber and smoked woods for after dark.",
   },
   {
-    id: "bosque-mistico",
+    id: "motion",
     name: "MOTION",
     meaning: "Green · Aromatic",
     price: 250,
@@ -78,7 +79,7 @@ export const PRODUCTS: Product[] = [
     blurb: "A cool walk through wet pine and cardamom smoke. Grounded, green, alive.",
   },
   {
-    id: "dulce-de-cuerpo",
+    id: "active",
     name: "ACTIVE",
     meaning: "Fresh · Citrus",
     price: 250,
@@ -90,7 +91,7 @@ export const PRODUCTS: Product[] = [
     blurb: "Warm skin, soft amber and vanilla. The scent of being close.",
   },
   {
-    id: "brisa-de-sal",
+    id: "performance",
     name: "PERFORMANCE",
     meaning: "Woody · Clean",
     price: 250,
@@ -103,7 +104,26 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
-export const productById = (id: string) => PRODUCTS.find((p) => p.id === id);
+// Live catalogue. Starts as the bundled list above (which owns the images), then
+// name / price / availability are overlaid from Convex so a change in the admin
+// dashboard reaches the app without a new release.
+const useCatalog = create(() => ({ products: PRODUCTS }));
+
+export const useProducts = () => useCatalog((s) => s.products);
+
+export function applyLive(rows: { slug: string; name: string; price: number; active: boolean }[]) {
+  const live = new Map(rows.map((r) => [r.slug, r]));
+  useCatalog.setState({
+    products: PRODUCTS.filter((p) => live.get(p.id)?.active !== false).map((p) => {
+      const r = live.get(p.id);
+      return r ? { ...p, name: r.name, price: r.price } : p;
+    }),
+  });
+}
+
+// Falls back to the bundled entry so a cart line for a since-hidden product still renders.
+export const productById = (id: string) =>
+  useCatalog.getState().products.find((p) => p.id === id) ?? PRODUCTS.find((p) => p.id === id);
 
 export const BENEFITS = [
   "Refreshes Clothes",

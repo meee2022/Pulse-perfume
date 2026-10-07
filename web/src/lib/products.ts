@@ -27,7 +27,7 @@ export const CURRENCY = "QAR";
 
 export const PRODUCTS: Product[] = [
   {
-    id: "bosque-mistico",
+    id: "motion",
     name: "MOTION",
     meaning: "Green · Aromatic",
     price: 250,
@@ -44,7 +44,7 @@ export const PRODUCTS: Product[] = [
     blurb: "A cool walk through wet pine and cardamom smoke. Grounded, green, alive.",
   },
   {
-    id: "dulce-de-cuerpo",
+    id: "active",
     name: "ACTIVE",
     meaning: "Fresh · Citrus",
     price: 250,
@@ -61,7 +61,7 @@ export const PRODUCTS: Product[] = [
     blurb: "Warm skin, soft amber and vanilla. The scent of being close.",
   },
   {
-    id: "brisa-de-sal",
+    id: "performance",
     name: "PERFORMANCE",
     meaning: "Woody · Clean",
     price: 250,
@@ -78,7 +78,7 @@ export const PRODUCTS: Product[] = [
     blurb: "Open air off the water — bergamot, salt and clean musk.",
   },
   {
-    id: "noir",
+    id: "intense",
     name: "INTENSE",
     meaning: "Dark · Amber",
     price: 300,

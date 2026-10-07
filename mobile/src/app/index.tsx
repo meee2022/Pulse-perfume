@@ -4,7 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { C, SPACING, RADIUS } from "../lib/theme";
-import { PRODUCTS, BENEFITS, CONTENT, HERO_IMG, BOXES_IMG } from "../lib/products";
+import { useProducts, BENEFITS, CONTENT, HERO_IMG, BOXES_IMG } from "../lib/products";
 import Button from "../components/Button";
 import ScentCard from "../components/ScentCard";
 import Logo from "../components/Logo";
@@ -24,6 +24,7 @@ function SectionHead({ eyebrow, title, sub }: { eyebrow: string; title: string; 
 export default function Home() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const products = useProducts();
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: C.bone }} showsVerticalScrollIndicator={false}>
@@ -63,7 +64,7 @@ export default function Home() {
         snapToInterval={width * 0.72 + 16}
         contentContainerStyle={{ paddingHorizontal: SPACING.lg, gap: 16, paddingVertical: 4 }}
       >
-        {PRODUCTS.map((p) => (
+        {products.map((p) => (
           <ScentCard key={p.id} p={p} width={width * 0.72} />
         ))}
       </ScrollView>
