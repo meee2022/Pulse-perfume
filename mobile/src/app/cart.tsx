@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScrollView, View, Text, StyleSheet, Pressable, TextInput } from "react-native";
+import { ScrollView, View, Text, StyleSheet, Pressable, TextInput, Alert } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { C, SPACING, RADIUS } from "../lib/theme";
@@ -17,6 +17,7 @@ export default function Cart() {
   const subtotal = useCart((s) => s.subtotal());
   const [step, setStep] = useState<Step>("cart");
   const [submitting, setSubmitting] = useState(false);
+  const [orderNo, setOrderNo] = useState("");
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", city: "" });
 
   const detail = (productId: string) => PRODUCTS.find((p) => p.id === productId)!;
@@ -28,10 +29,11 @@ export default function Cart() {
       const p = detail(l.productId);
       return { productId: p.id, name: p.name, size: l.size, qty: l.qty, price: priceOf(l.productId, l.size) };
     });
-    // Record the order in the shared backend (so it appears in the web admin dashboard).
-    // Never block the customer on a network hiccup — confirm the order regardless.
+    // The order must actually reach the backend before we confirm it — otherwise
+    // a network failure would lose the sale while telling the customer it succeeded.
+    let id: string;
     try {
-      await submitOrder({
+      id = await submitOrder({
         customer: {
           name: form.name.trim(),
           email: form.email.trim(),
@@ -44,8 +46,11 @@ export default function Cart() {
         currency: CURRENCY,
       });
     } catch (e) {
-      console.warn("order submit failed (kept locally):", e);
+      setSubmitting(false);
+      Alert.alert("Couldn't place your order", "Please check your connection and try again.");
+      return;
     }
+    setOrderNo(id.slice(-6).toUpperCase());
     setStep("done");
     await notifyOrderPlaced(money(subtotal));
     clear();
@@ -59,8 +64,9 @@ export default function Cart() {
           <Text style={{ color: C.bone, fontSize: 30 }}>✓</Text>
         </View>
         <Text style={styles.doneTitle}>Order Placed!</Text>
+        <Text style={styles.orderNo}>Order #{orderNo}</Text>
         <Text style={styles.doneBody}>
-          Thank you for choosing PULSE. Your order is being prepared and will be delivered soon.
+          Thank you for choosing PULSE. Keep your order number for reference — we'll be in touch to arrange delivery.
         </Text>
         <Button label="Back to Home" onPress={() => router.replace("/")} style={{ marginTop: 24 }} />
       </View>
@@ -181,5 +187,6 @@ const styles = StyleSheet.create({
 
   check: { width: 64, height: 64, borderRadius: 999, backgroundColor: C.olive, alignItems: "center", justifyContent: "center" },
   doneTitle: { fontSize: 24, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase", color: C.ink, marginTop: 20 },
+  orderNo: { fontSize: 13, letterSpacing: 2, color: C.olive, marginTop: 8, fontWeight: "600" },
   doneBody: { fontSize: 14, lineHeight: 22, color: "rgba(34,36,29,0.65)", textAlign: "center", marginTop: 12 },
 });

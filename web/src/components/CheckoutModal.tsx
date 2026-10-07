@@ -10,7 +10,7 @@ import { useCart } from "@/lib/store";
 import { useLang } from "@/lib/lang";
 import { createOrderRef } from "@/lib/convex";
 
-type Status = "form" | "loading" | "success";
+type Status = "form" | "loading" | "success" | "error";
 
 const STRIPE_ON = process.env.NEXT_PUBLIC_STRIPE_ENABLED === "true";
 
@@ -26,6 +26,7 @@ export default function CheckoutModal({ open, onClose }: { open: boolean; onClos
     return p && s ? sum + Math.round(p.price * s.multiplier) * l.qty : sum;
   }, 0);
   const [status, setStatus] = useState<Status>("form");
+  const [orderNo, setOrderNo] = useState("");
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", city: "" });
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -45,13 +46,14 @@ export default function CheckoutModal({ open, onClose }: { open: boolean; onClos
     return { productId: p.id, name: p.name, size: s.id, qty: l.qty, price: Math.round(p.price * s.multiplier) };
   });
 
-  // save the order to Convex (only when enabled + deployed; never blocks checkout)
-  async function saveOrder() {
-    if (process.env.NEXT_PUBLIC_CONVEX_ENABLED !== "true") return;
+  // Save the order to Convex. Returns the order id, or null if it did not persist —
+  // the caller must never confirm an order that was not recorded.
+  async function saveOrder(): Promise<string | null> {
+    if (process.env.NEXT_PUBLIC_CONVEX_ENABLED !== "true") return "DEMO";
     try {
-      await createOrder({ customer: form, items: orderItems, total: subtotal, currency: "QAR" });
+      return String(await createOrder({ customer: form, items: orderItems, total: subtotal, currency: "QAR" }));
     } catch {
-      /* Convex unreachable — order still confirmed locally */
+      return null;
     }
   }
 
@@ -73,15 +75,17 @@ export default function CheckoutModal({ open, onClose }: { open: boolean; onClos
         }
         throw new Error(data.error || "failed");
       } catch {
-        await saveOrder();
-        setStatus("success");
-        clear();
+        setStatus("error"); // payment did not start — never report success
         return;
       }
     }
 
-    await new Promise((r) => setTimeout(r, 700));
-    await saveOrder();
+    const id = await saveOrder();
+    if (!id) {
+      setStatus("error");
+      return;
+    }
+    setOrderNo(id.slice(-6).toUpperCase());
     setStatus("success");
     clear();
   }
@@ -115,9 +119,22 @@ export default function CheckoutModal({ open, onClose }: { open: boolean; onClos
                     <Check size={30} />
                   </div>
                   <h2 className="mt-6 font-display text-2xl uppercase tracking-wide2 text-ink">{t.checkout.successTitle}</h2>
+                  {orderNo && orderNo !== "DEMO" && (
+                    <p className="mt-2 font-body text-[13px] font-medium tracking-wide2 text-olive">
+                      {t.checkout.orderNo} #{orderNo}
+                    </p>
+                  )}
                   <p className="mt-3 max-w-sm text-ink/65">{t.checkout.successBody}</p>
                   <button onClick={reset} className="btn-solid mt-8">
                     {t.checkout.back}
+                  </button>
+                </div>
+              ) : status === "error" ? (
+                <div className="flex flex-col items-center px-8 py-14 text-center" role="alert">
+                  <h2 className="font-display text-2xl uppercase tracking-wide2 text-ink">{t.checkout.errorTitle}</h2>
+                  <p className="mt-3 max-w-sm text-ink/65">{t.checkout.errorBody}</p>
+                  <button onClick={() => setStatus("form")} className="btn-solid mt-8">
+                    {t.checkout.retry}
                   </button>
                 </div>
               ) : (
