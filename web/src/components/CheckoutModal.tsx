@@ -12,8 +12,6 @@ import { createOrderRef } from "@/lib/convex";
 
 type Status = "form" | "loading" | "success" | "error";
 
-const STRIPE_ON = process.env.NEXT_PUBLIC_STRIPE_ENABLED === "true";
-
 export default function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { lines, clear } = useCart();
   const products = useProducts();
@@ -32,7 +30,7 @@ export default function CheckoutModal({ open, onClose }: { open: boolean; onClos
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  // for Stripe line items
+  // line items shown in the order summary
   const items = lines.map((l) => {
     const p = products.find((x) => x.id === l.productId)!;
     const s = SIZES.find((x) => x.id === l.sizeId)!;
@@ -60,25 +58,6 @@ export default function CheckoutModal({ open, onClose }: { open: boolean; onClos
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
-
-    if (STRIPE_ON) {
-      try {
-        const res = await fetch("/api/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ items, customer: form }),
-        });
-        const data = await res.json();
-        if (data.url) {
-          window.location.href = data.url;
-          return;
-        }
-        throw new Error(data.error || "failed");
-      } catch {
-        setStatus("error"); // payment did not start — never report success
-        return;
-      }
-    }
 
     const id = await saveOrder();
     if (!id) {
@@ -175,13 +154,11 @@ export default function CheckoutModal({ open, onClose }: { open: boolean; onClos
                         <>
                           <Loader2 size={16} className="animate-spin" /> {t.checkout.processing}
                         </>
-                      ) : STRIPE_ON ? (
-                        `${t.checkout.pay} ${money(subtotal)}`
                       ) : (
                         `${t.checkout.place} · ${money(subtotal)}`
                       )}
                     </button>
-                    {!STRIPE_ON && <p className="text-center text-xs text-ink/40">{t.checkout.demoNote}</p>}
+                    <p className="text-center text-xs text-ink/40">{t.checkout.demoNote}</p>
                   </form>
                 </>
               )}

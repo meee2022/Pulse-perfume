@@ -1,10 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  images: {
-    // brand shots are large PNGs shipped from /public
-    formats: ["image/avif", "image/webp"],
-  },
+  // Fully static site (hosted on Cloudflare Pages). Orders, products and the
+  // admin dashboard talk to Convex directly from the browser.
+  output: "export",
+  images: { unoptimized: true }, // no image server on a static host
+
 };
 
 export default nextConfig;
