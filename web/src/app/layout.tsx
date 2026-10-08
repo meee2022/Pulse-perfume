@@ -31,17 +31,17 @@ export const metadata: Metadata = {
     template: "%s · PULSE Perfume",
   },
   description:
-    "PULSE — a scent that moves with you. An all-over spray in three colorways. Fine mist, long-lasting freshness.",
+    "PULSE — a scent that moves with you. An all-over spray in four colorways. Fine mist, long-lasting freshness.",
   keywords: ["PULSE", "perfume", "all-over spray", "sport scent", "fragrance", "عطر", "بلس"],
   openGraph: {
     title: "PULSE — Move With It.",
     description: "A scent that moves with you. Modern Sport Scent · Est. 2026.",
     url: SITE_URL,
     siteName: "PULSE Perfume",
-    images: [{ url: "/images/hero-collection.png", width: 1672, height: 941 }],
+    images: [{ url: "/images/og.jpg", width: 1200, height: 630, alt: "PULSE INTENSE — Modern Sport Scent" }],
     type: "website",
   },
-  twitter: { card: "summary_large_image", title: "PULSE — Move With It." },
+  twitter: { card: "summary_large_image", title: "PULSE — Move With It.", images: ["/images/og.jpg"] },
   manifest: "/manifest.webmanifest",
   icons: { icon: "/icon.svg", apple: "/icon.svg" },
 };
