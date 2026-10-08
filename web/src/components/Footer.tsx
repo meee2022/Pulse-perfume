@@ -55,6 +55,10 @@ export default function Footer() {
         <div className="mt-16 flex flex-col items-center justify-between gap-3 border-t border-paper-1/10 pt-8 text-[12px] text-paper-1/45 md:flex-row">
           <span>{t.footer.copy}</span>
           <span className="font-display uppercase tracking-wide2">{t.footer.tagline}</span>
+          {/* owner entry point: opens the sign-in screen, then the dashboard */}
+          <a href="/admin" className="ulink text-[11px] text-paper-1/45 hover:text-paper-1">
+            Admin Login
+          </a>
         </div>
       </div>
     </footer>
